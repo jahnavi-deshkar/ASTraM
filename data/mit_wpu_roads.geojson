@@ -2,47 +2,1961 @@
   "type": "FeatureCollection",
   "name": "mit_wpu_roads",
   "metadata": {
-    "title": "MIT-WPU campus road network (schematic starter dataset)",
-    "description": "Illustrative directed road network centered near MIT World Peace University, Pune. Node positions and segment geometry are approximate and must be surveyed or checked against authoritative campus mapping before operational use.",
+    "title": "MIT-WPU poster-aligned campus road schematic",
+    "description": "Road centerlines manually traced in image pixel space from the user-supplied campus layout poster and transformed with the provisional affine calibration below. Not a surveyed basemap.",
     "coordinate_reference_system": "OGC:CRS84",
     "coordinate_order": "longitude, latitude",
     "units": {
       "capacity": "vehicles per hour (illustrative)",
-      "free_flow_time_sec": "seconds"
+      "free_flow_time_sec": "seconds",
+      "layout_coordinates": "poster pixels [x,y]"
     },
-    "network_model": "Directed graph; each LineString is one directed edge. Reverse movements are represented as separate features.",
-    "flow_boundary_convention": "entry and exit nodes are boundary nodes; internal nodes have no boundary marker. Supply measured net boundary flows before solving conservation equations."
+    "layout_image": "/static/assets/mit_wpu_campus_layout.png",
+    "layout_calibration": {
+      "width_px": 479,
+      "height_px": 816,
+      "west_lon": 73.8162,
+      "east_lon": 73.81975,
+      "south_lat": 18.5161,
+      "north_lat": 18.52165,
+      "status": "provisional; replace with surveyed control points for live GPS accuracy"
+    },
+    "network_model": "Directed edges; reverse movements are separate features. Main Gate, Gate 3, and Cast Gate are modeled as boundary nodes.",
+    "flow_boundary_convention": "Positive values are entry supply, negative values are exit demand. Steady-state boundary values must sum to zero.",
+    "topology_note": "e19/e20 represent an illustrative Gate 1 bypass trace for closure simulation; validate against the actual road centerline before operational use."
   },
   "nodes": [
-    {"id":"node_1","name":"Gate 1 Main Entrance","longitude":73.81720,"latitude":18.51720,"boundary_type":"entry","boundary_flow_marker":"entry"},
-    {"id":"node_2","name":"Central Access Junction","longitude":73.81800,"latitude":18.51780,"boundary_type":"internal","boundary_flow_marker":null},
-    {"id":"node_3","name":"Academic Block Junction","longitude":73.81890,"latitude":18.51835,"boundary_type":"internal","boundary_flow_marker":null},
-    {"id":"node_4","name":"Central Campus Junction","longitude":73.81805,"latitude":18.51875,"boundary_type":"internal","boundary_flow_marker":null},
-    {"id":"node_5","name":"Library Junction","longitude":73.81715,"latitude":18.51830,"boundary_type":"internal","boundary_flow_marker":null},
-    {"id":"node_6","name":"North Campus Junction","longitude":73.81885,"latitude":18.51915,"boundary_type":"internal","boundary_flow_marker":null},
-    {"id":"node_7","name":"Paud Road Access","longitude":73.81975,"latitude":18.51870,"boundary_type":"entry_exit","boundary_flow_marker":"entry_exit"},
-    {"id":"node_8","name":"West Parking Access","longitude":73.81635,"latitude":18.51855,"boundary_type":"exit","boundary_flow_marker":"exit"}
+    {
+      "id": "node_1",
+      "name": "Main Gate",
+      "longitude": 73.81728946,
+      "latitude": 18.51665092,
+      "poster_x": 147,
+      "poster_y": 735,
+      "boundary_type": "entry_exit",
+      "boundary_flow_marker": "entry_exit"
+    },
+    {
+      "id": "node_2",
+      "name": "South Campus Spine Junction",
+      "longitude": 73.81728946,
+      "latitude": 18.51722904,
+      "poster_x": 147,
+      "poster_y": 650,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_3",
+      "name": "Dnyaneshwar Lawns Avenue Junction",
+      "longitude": 73.81728946,
+      "latitude": 18.51818125,
+      "poster_x": 147,
+      "poster_y": 510,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_4",
+      "name": "Central Cafeteria Avenue Junction",
+      "longitude": 73.81728946,
+      "latitude": 18.51907904,
+      "poster_x": 147,
+      "poster_y": 378,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_5",
+      "name": "Saraswati and North Avenue Junction",
+      "longitude": 73.81728946,
+      "latitude": 18.51985441,
+      "poster_x": 147,
+      "poster_y": 264,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_6",
+      "name": "North Campus Gate 3 Avenue Junction",
+      "longitude": 73.81728946,
+      "latitude": 18.52093585,
+      "poster_x": 147,
+      "poster_y": 105,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_7",
+      "name": "Cast Gate",
+      "longitude": 73.818831,
+      "latitude": 18.51899743,
+      "poster_x": 355,
+      "poster_y": 390,
+      "boundary_type": "entry_exit",
+      "boundary_flow_marker": "entry_exit"
+    },
+    {
+      "id": "node_8",
+      "name": "Gate 3",
+      "longitude": 73.81890511,
+      "latitude": 18.52045294,
+      "poster_x": 365,
+      "poster_y": 176,
+      "boundary_type": "entry_exit",
+      "boundary_flow_marker": "entry_exit"
+    },
+    {
+      "id": "node_9",
+      "name": "Sports Complex West Loop Junction",
+      "longitude": 73.81787495,
+      "latitude": 18.51907904,
+      "poster_x": 226,
+      "poster_y": 378,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_10",
+      "name": "Sports Complex Northwest Loop",
+      "longitude": 73.81789718,
+      "latitude": 18.52005165,
+      "poster_x": 229,
+      "poster_y": 235,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_11",
+      "name": "Sports Complex Northeast Loop",
+      "longitude": 73.81874948,
+      "latitude": 18.52005165,
+      "poster_x": 344,
+      "poster_y": 235,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_12",
+      "name": "Sports Complex Cast Access Junction",
+      "longitude": 73.81877912,
+      "latitude": 18.51907904,
+      "poster_x": 348,
+      "poster_y": 378,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    },
+    {
+      "id": "node_13",
+      "name": "East Campus Avenue Junction",
+      "longitude": 73.81899405,
+      "latitude": 18.51818125,
+      "poster_x": 377,
+      "poster_y": 510,
+      "boundary_type": "internal",
+      "boundary_flow_marker": null
+    }
   ],
   "features": [
-    {"type":"Feature","id":"edge_1","geometry":{"type":"LineString","coordinates":[[73.81720,18.51720],[73.81800,18.51780]]},"properties":{"id":"e1","name":"Gate 1 Main Entrance","source":"node_1","target":"node_2","capacity":150,"free_flow_time_sec":24,"lanes":2}},
-    {"type":"Feature","id":"edge_2","geometry":{"type":"LineString","coordinates":[[73.81800,18.51780],[73.81720,18.51720]]},"properties":{"id":"e2","name":"Gate 1 Main Entrance (outbound)","source":"node_2","target":"node_1","capacity":150,"free_flow_time_sec":24,"lanes":2}},
-    {"type":"Feature","id":"edge_3","geometry":{"type":"LineString","coordinates":[[73.81800,18.51780],[73.81890,18.51835]]},"properties":{"id":"e3","name":"Academic Block Link","source":"node_2","target":"node_3","capacity":120,"free_flow_time_sec":28,"lanes":2}},
-    {"type":"Feature","id":"edge_4","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81800,18.51780]]},"properties":{"id":"e4","name":"Academic Block Link (southbound)","source":"node_3","target":"node_2","capacity":120,"free_flow_time_sec":28,"lanes":2}},
-    {"type":"Feature","id":"edge_5","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81805,18.51875]]},"properties":{"id":"e5","name":"Central Spine East Link","source":"node_3","target":"node_4","capacity":100,"free_flow_time_sec":22,"lanes":1}},
-    {"type":"Feature","id":"edge_6","geometry":{"type":"LineString","coordinates":[[73.81805,18.51875],[73.81890,18.51835]]},"properties":{"id":"e6","name":"Central Spine East Link (eastbound)","source":"node_4","target":"node_3","capacity":100,"free_flow_time_sec":22,"lanes":1}},
-    {"type":"Feature","id":"edge_7","geometry":{"type":"LineString","coordinates":[[73.81805,18.51875],[73.81715,18.51830]]},"properties":{"id":"e7","name":"Library Connector","source":"node_4","target":"node_5","capacity":100,"free_flow_time_sec":25,"lanes":1}},
-    {"type":"Feature","id":"edge_8","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81805,18.51875]]},"properties":{"id":"e8","name":"Library Connector (eastbound)","source":"node_5","target":"node_4","capacity":100,"free_flow_time_sec":25,"lanes":1}},
-    {"type":"Feature","id":"edge_9","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81800,18.51780]]},"properties":{"id":"e9","name":"South Campus Link","source":"node_5","target":"node_2","capacity":90,"free_flow_time_sec":30,"lanes":1}},
-    {"type":"Feature","id":"edge_10","geometry":{"type":"LineString","coordinates":[[73.81800,18.51780],[73.81715,18.51830]]},"properties":{"id":"e10","name":"South Campus Link (northbound)","source":"node_2","target":"node_5","capacity":90,"free_flow_time_sec":30,"lanes":1}},
-    {"type":"Feature","id":"edge_11","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81885,18.51915]]},"properties":{"id":"e11","name":"North Academic Link","source":"node_3","target":"node_6","capacity":110,"free_flow_time_sec":26,"lanes":1}},
-    {"type":"Feature","id":"edge_12","geometry":{"type":"LineString","coordinates":[[73.81885,18.51915],[73.81890,18.51835]]},"properties":{"id":"e12","name":"North Academic Link (southbound)","source":"node_6","target":"node_3","capacity":110,"free_flow_time_sec":26,"lanes":1}},
-    {"type":"Feature","id":"edge_13","geometry":{"type":"LineString","coordinates":[[73.81885,18.51915],[73.81805,18.51875]]},"properties":{"id":"e13","name":"North Campus Cross Link","source":"node_6","target":"node_4","capacity":80,"free_flow_time_sec":27,"lanes":1}},
-    {"type":"Feature","id":"edge_14","geometry":{"type":"LineString","coordinates":[[73.81805,18.51875],[73.81885,18.51915]]},"properties":{"id":"e14","name":"North Campus Cross Link (northbound)","source":"node_4","target":"node_6","capacity":80,"free_flow_time_sec":27,"lanes":1}},
-    {"type":"Feature","id":"edge_15","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81975,18.51870]]},"properties":{"id":"e15","name":"Paud Road Link","source":"node_3","target":"node_7","capacity":140,"free_flow_time_sec":23,"lanes":2}},
-    {"type":"Feature","id":"edge_16","geometry":{"type":"LineString","coordinates":[[73.81975,18.51870],[73.81890,18.51835]]},"properties":{"id":"e16","name":"Paud Road Link (campusbound)","source":"node_7","target":"node_3","capacity":140,"free_flow_time_sec":23,"lanes":2}},
-    {"type":"Feature","id":"edge_17","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81635,18.51855]]},"properties":{"id":"e17","name":"West Parking Access Road","source":"node_5","target":"node_8","capacity":70,"free_flow_time_sec":21,"lanes":1}},
-    {"type":"Feature","id":"edge_18","geometry":{"type":"LineString","coordinates":[[73.81635,18.51855],[73.81715,18.51830]]},"properties":{"id":"e18","name":"West Parking Access Road (inbound)","source":"node_8","target":"node_5","capacity":70,"free_flow_time_sec":21,"lanes":1}},
-    {"type":"Feature","id":"edge_19","geometry":{"type":"LineString","coordinates":[[73.81720,18.51720],[73.81715,18.51830]]},"properties":{"id":"e19","name":"Gate 1 North Bypass","source":"node_1","target":"node_5","capacity":100,"free_flow_time_sec":32,"lanes":1}},
-    {"type":"Feature","id":"edge_20","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81720,18.51720]]},"properties":{"id":"e20","name":"Gate 1 North Bypass (southbound)","source":"node_5","target":"node_1","capacity":100,"free_flow_time_sec":32,"lanes":1}}
+    {
+      "type": "Feature",
+      "id": "edge_e1",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51665092
+          ],
+          [
+            73.81728946,
+            18.51688897
+          ],
+          [
+            73.81728946,
+            18.51722904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e1",
+        "name": "Main Gate Road Trunk",
+        "source": "node_1",
+        "target": "node_2",
+        "capacity": 150,
+        "free_flow_time_sec": 24,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            735
+          ],
+          [
+            147,
+            700
+          ],
+          [
+            147,
+            650
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e2",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51722904
+          ],
+          [
+            73.81728946,
+            18.51688897
+          ],
+          [
+            73.81728946,
+            18.51665092
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e2",
+        "name": "Main Gate Road Trunk (reverse)",
+        "source": "node_2",
+        "target": "node_1",
+        "capacity": 150,
+        "free_flow_time_sec": 24,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            650
+          ],
+          [
+            147,
+            700
+          ],
+          [
+            147,
+            735
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e3",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51722904
+          ],
+          [
+            73.81728946,
+            18.5175011
+          ],
+          [
+            73.81728946,
+            18.51777316
+          ],
+          [
+            73.81728946,
+            18.51818125
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e3",
+        "name": "South Campus Spine",
+        "source": "node_2",
+        "target": "node_3",
+        "capacity": 140,
+        "free_flow_time_sec": 32,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            650
+          ],
+          [
+            147,
+            610
+          ],
+          [
+            147,
+            570
+          ],
+          [
+            147,
+            510
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e4",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51818125
+          ],
+          [
+            73.81728946,
+            18.51777316
+          ],
+          [
+            73.81728946,
+            18.5175011
+          ],
+          [
+            73.81728946,
+            18.51722904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e4",
+        "name": "South Campus Spine (reverse)",
+        "source": "node_3",
+        "target": "node_2",
+        "capacity": 140,
+        "free_flow_time_sec": 32,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            510
+          ],
+          [
+            147,
+            570
+          ],
+          [
+            147,
+            610
+          ],
+          [
+            147,
+            650
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e5",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51818125
+          ],
+          [
+            73.81728946,
+            18.51848732
+          ],
+          [
+            73.81728946,
+            18.51879338
+          ],
+          [
+            73.81728946,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e5",
+        "name": "Dnyaneshwar Lawns Avenue",
+        "source": "node_3",
+        "target": "node_4",
+        "capacity": 150,
+        "free_flow_time_sec": 28,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            510
+          ],
+          [
+            147,
+            465
+          ],
+          [
+            147,
+            420
+          ],
+          [
+            147,
+            378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e6",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51907904
+          ],
+          [
+            73.81728946,
+            18.51879338
+          ],
+          [
+            73.81728946,
+            18.51848732
+          ],
+          [
+            73.81728946,
+            18.51818125
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e6",
+        "name": "Dnyaneshwar Lawns Avenue (reverse)",
+        "source": "node_4",
+        "target": "node_3",
+        "capacity": 150,
+        "free_flow_time_sec": 28,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            378
+          ],
+          [
+            147,
+            420
+          ],
+          [
+            147,
+            465
+          ],
+          [
+            147,
+            510
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e7",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51907904
+          ],
+          [
+            73.81728946,
+            18.51937151
+          ],
+          [
+            73.81728946,
+            18.51960956
+          ],
+          [
+            73.81728946,
+            18.51985441
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e7",
+        "name": "Central Cafeteria Avenue",
+        "source": "node_4",
+        "target": "node_5",
+        "capacity": 150,
+        "free_flow_time_sec": 25,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            378
+          ],
+          [
+            147,
+            335
+          ],
+          [
+            147,
+            300
+          ],
+          [
+            147,
+            264
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e8",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51985441
+          ],
+          [
+            73.81728946,
+            18.51960956
+          ],
+          [
+            73.81728946,
+            18.51937151
+          ],
+          [
+            73.81728946,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e8",
+        "name": "Central Cafeteria Avenue (reverse)",
+        "source": "node_5",
+        "target": "node_4",
+        "capacity": 150,
+        "free_flow_time_sec": 25,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            264
+          ],
+          [
+            147,
+            300
+          ],
+          [
+            147,
+            335
+          ],
+          [
+            147,
+            378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e9",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51985441
+          ],
+          [
+            73.81728946,
+            18.52015368
+          ],
+          [
+            73.81728946,
+            18.52049375
+          ],
+          [
+            73.81728946,
+            18.52093585
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e9",
+        "name": "North Saraswati Avenue",
+        "source": "node_5",
+        "target": "node_6",
+        "capacity": 150,
+        "free_flow_time_sec": 30,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            147,
+            264
+          ],
+          [
+            147,
+            220
+          ],
+          [
+            147,
+            170
+          ],
+          [
+            147,
+            105
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e10",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.52093585
+          ],
+          [
+            73.81728946,
+            18.52049375
+          ],
+          [
+            73.81728946,
+            18.52015368
+          ],
+          [
+            73.81728946,
+            18.51985441
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e10",
+        "name": "North Saraswati Avenue (reverse)",
+        "source": "node_6",
+        "target": "node_5",
+        "capacity": 150,
+        "free_flow_time_sec": 30,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            147,
+            105
+          ],
+          [
+            147,
+            170
+          ],
+          [
+            147,
+            220
+          ],
+          [
+            147,
+            264
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e11",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.52093585
+          ],
+          [
+            73.81748956,
+            18.52094265
+          ],
+          [
+            73.81769708,
+            18.52090184
+          ],
+          [
+            73.81791942,
+            18.52084063
+          ],
+          [
+            73.81814175,
+            18.52077941
+          ],
+          [
+            73.81836409,
+            18.5207046
+          ],
+          [
+            73.81857902,
+            18.52062298
+          ],
+          [
+            73.81875689,
+            18.52054136
+          ],
+          [
+            73.81890511,
+            18.52045294
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e11",
+        "name": "Gate 3 North Link",
+        "source": "node_6",
+        "target": "node_8",
+        "capacity": 150,
+        "free_flow_time_sec": 34,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            105
+          ],
+          [
+            174,
+            104
+          ],
+          [
+            202,
+            110
+          ],
+          [
+            232,
+            119
+          ],
+          [
+            262,
+            128
+          ],
+          [
+            292,
+            139
+          ],
+          [
+            321,
+            151
+          ],
+          [
+            345,
+            163
+          ],
+          [
+            365,
+            176
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e12",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81890511,
+            18.52045294
+          ],
+          [
+            73.81875689,
+            18.52054136
+          ],
+          [
+            73.81857902,
+            18.52062298
+          ],
+          [
+            73.81836409,
+            18.5207046
+          ],
+          [
+            73.81814175,
+            18.52077941
+          ],
+          [
+            73.81791942,
+            18.52084063
+          ],
+          [
+            73.81769708,
+            18.52090184
+          ],
+          [
+            73.81748956,
+            18.52094265
+          ],
+          [
+            73.81728946,
+            18.52093585
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e12",
+        "name": "Gate 3 North Link (reverse)",
+        "source": "node_8",
+        "target": "node_6",
+        "capacity": 150,
+        "free_flow_time_sec": 34,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            365,
+            176
+          ],
+          [
+            345,
+            163
+          ],
+          [
+            321,
+            151
+          ],
+          [
+            292,
+            139
+          ],
+          [
+            262,
+            128
+          ],
+          [
+            232,
+            119
+          ],
+          [
+            202,
+            110
+          ],
+          [
+            174,
+            104
+          ],
+          [
+            147,
+            105
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e13",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51907904
+          ],
+          [
+            73.81765261,
+            18.51907904
+          ],
+          [
+            73.81801576,
+            18.51907224
+          ],
+          [
+            73.81839374,
+            18.51907224
+          ],
+          [
+            73.81866795,
+            18.51905864
+          ],
+          [
+            73.818831,
+            18.51899743
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e13",
+        "name": "Central Avenue to Cast Gate",
+        "source": "node_4",
+        "target": "node_7",
+        "capacity": 100,
+        "free_flow_time_sec": 31,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            378
+          ],
+          [
+            196,
+            378
+          ],
+          [
+            245,
+            379
+          ],
+          [
+            296,
+            379
+          ],
+          [
+            333,
+            381
+          ],
+          [
+            355,
+            390
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e14",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.818831,
+            18.51899743
+          ],
+          [
+            73.81866795,
+            18.51905864
+          ],
+          [
+            73.81839374,
+            18.51907224
+          ],
+          [
+            73.81801576,
+            18.51907224
+          ],
+          [
+            73.81765261,
+            18.51907904
+          ],
+          [
+            73.81728946,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e14",
+        "name": "Central Avenue to Cast Gate (reverse)",
+        "source": "node_7",
+        "target": "node_4",
+        "capacity": 100,
+        "free_flow_time_sec": 31,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            355,
+            390
+          ],
+          [
+            333,
+            381
+          ],
+          [
+            296,
+            379
+          ],
+          [
+            245,
+            379
+          ],
+          [
+            196,
+            378
+          ],
+          [
+            147,
+            378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e15",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51818125
+          ],
+          [
+            73.81771931,
+            18.51818125
+          ],
+          [
+            73.81812693,
+            18.51818125
+          ],
+          [
+            73.81857161,
+            18.51818125
+          ],
+          [
+            73.81899405,
+            18.51818125
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e15",
+        "name": "Dnyaneshwar East Avenue",
+        "source": "node_3",
+        "target": "node_13",
+        "capacity": 110,
+        "free_flow_time_sec": 27,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            147,
+            510
+          ],
+          [
+            205,
+            510
+          ],
+          [
+            260,
+            510
+          ],
+          [
+            320,
+            510
+          ],
+          [
+            377,
+            510
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e16",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81899405,
+            18.51818125
+          ],
+          [
+            73.81857161,
+            18.51818125
+          ],
+          [
+            73.81812693,
+            18.51818125
+          ],
+          [
+            73.81771931,
+            18.51818125
+          ],
+          [
+            73.81728946,
+            18.51818125
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e16",
+        "name": "Dnyaneshwar East Avenue (reverse)",
+        "source": "node_13",
+        "target": "node_3",
+        "capacity": 110,
+        "free_flow_time_sec": 27,
+        "lanes": 2,
+        "layout_coordinates": [
+          [
+            377,
+            510
+          ],
+          [
+            320,
+            510
+          ],
+          [
+            260,
+            510
+          ],
+          [
+            205,
+            510
+          ],
+          [
+            147,
+            510
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e17",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81899405,
+            18.51818125
+          ],
+          [
+            73.81899405,
+            18.51845331
+          ],
+          [
+            73.81899405,
+            18.51872537
+          ],
+          [
+            73.81899405,
+            18.5188954
+          ],
+          [
+            73.818831,
+            18.51899743
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e17",
+        "name": "Cast Gate Access Link",
+        "source": "node_13",
+        "target": "node_7",
+        "capacity": 90,
+        "free_flow_time_sec": 24,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            377,
+            510
+          ],
+          [
+            377,
+            470
+          ],
+          [
+            377,
+            430
+          ],
+          [
+            377,
+            405
+          ],
+          [
+            355,
+            390
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e18",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.818831,
+            18.51899743
+          ],
+          [
+            73.81899405,
+            18.5188954
+          ],
+          [
+            73.81899405,
+            18.51872537
+          ],
+          [
+            73.81899405,
+            18.51845331
+          ],
+          [
+            73.81899405,
+            18.51818125
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e18",
+        "name": "Cast Gate Access Link (reverse)",
+        "source": "node_7",
+        "target": "node_13",
+        "capacity": 90,
+        "free_flow_time_sec": 24,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            355,
+            390
+          ],
+          [
+            377,
+            405
+          ],
+          [
+            377,
+            430
+          ],
+          [
+            377,
+            470
+          ],
+          [
+            377,
+            510
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e19",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51665092
+          ],
+          [
+            73.81736357,
+            18.51686176
+          ],
+          [
+            73.8173858,
+            18.51705901
+          ],
+          [
+            73.8173858,
+            18.51722904
+          ],
+          [
+            73.8173858,
+            18.5175011
+          ],
+          [
+            73.81736357,
+            18.51777316
+          ],
+          [
+            73.81734134,
+            18.51801121
+          ],
+          [
+            73.81728946,
+            18.51818125
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e19",
+        "name": "Gate 1 North Bypass",
+        "source": "node_1",
+        "target": "node_3",
+        "capacity": 100,
+        "free_flow_time_sec": 42,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            147,
+            735
+          ],
+          [
+            157,
+            704
+          ],
+          [
+            160,
+            675
+          ],
+          [
+            160,
+            650
+          ],
+          [
+            160,
+            610
+          ],
+          [
+            157,
+            570
+          ],
+          [
+            154,
+            535
+          ],
+          [
+            147,
+            510
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e20",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51818125
+          ],
+          [
+            73.81734134,
+            18.51801121
+          ],
+          [
+            73.81736357,
+            18.51777316
+          ],
+          [
+            73.8173858,
+            18.5175011
+          ],
+          [
+            73.8173858,
+            18.51722904
+          ],
+          [
+            73.8173858,
+            18.51705901
+          ],
+          [
+            73.81736357,
+            18.51686176
+          ],
+          [
+            73.81728946,
+            18.51665092
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e20",
+        "name": "Gate 1 North Bypass (reverse)",
+        "source": "node_3",
+        "target": "node_1",
+        "capacity": 100,
+        "free_flow_time_sec": 42,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            147,
+            510
+          ],
+          [
+            154,
+            535
+          ],
+          [
+            157,
+            570
+          ],
+          [
+            160,
+            610
+          ],
+          [
+            160,
+            650
+          ],
+          [
+            160,
+            675
+          ],
+          [
+            157,
+            704
+          ],
+          [
+            147,
+            735
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e21",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81728946,
+            18.51907904
+          ],
+          [
+            73.81753403,
+            18.51907904
+          ],
+          [
+            73.81771931,
+            18.51907904
+          ],
+          [
+            73.81787495,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e21",
+        "name": "Sports Complex West Approach",
+        "source": "node_4",
+        "target": "node_9",
+        "capacity": 90,
+        "free_flow_time_sec": 19,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            147,
+            378
+          ],
+          [
+            180,
+            378
+          ],
+          [
+            205,
+            378
+          ],
+          [
+            226,
+            378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e22",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81787495,
+            18.51907904
+          ],
+          [
+            73.81771931,
+            18.51907904
+          ],
+          [
+            73.81753403,
+            18.51907904
+          ],
+          [
+            73.81728946,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e22",
+        "name": "Sports Complex West Approach (reverse)",
+        "source": "node_9",
+        "target": "node_4",
+        "capacity": 90,
+        "free_flow_time_sec": 19,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            226,
+            378
+          ],
+          [
+            205,
+            378
+          ],
+          [
+            180,
+            378
+          ],
+          [
+            147,
+            378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e23",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81787495,
+            18.51907904
+          ],
+          [
+            73.81788236,
+            18.51930349
+          ],
+          [
+            73.81788236,
+            18.51954154
+          ],
+          [
+            73.81788977,
+            18.5197796
+          ],
+          [
+            73.81789718,
+            18.52005165
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e23",
+        "name": "Sports Complex West Loop Road",
+        "source": "node_9",
+        "target": "node_10",
+        "capacity": 80,
+        "free_flow_time_sec": 22,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            226,
+            378
+          ],
+          [
+            227,
+            345
+          ],
+          [
+            227,
+            310
+          ],
+          [
+            228,
+            275
+          ],
+          [
+            229,
+            235
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e24",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81789718,
+            18.52005165
+          ],
+          [
+            73.81788977,
+            18.5197796
+          ],
+          [
+            73.81788236,
+            18.51954154
+          ],
+          [
+            73.81788236,
+            18.51930349
+          ],
+          [
+            73.81787495,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e24",
+        "name": "Sports Complex West Loop Road (reverse)",
+        "source": "node_10",
+        "target": "node_9",
+        "capacity": 80,
+        "free_flow_time_sec": 22,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            229,
+            235
+          ],
+          [
+            228,
+            275
+          ],
+          [
+            227,
+            310
+          ],
+          [
+            227,
+            345
+          ],
+          [
+            226,
+            378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e25",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81789718,
+            18.52005165
+          ],
+          [
+            73.81806023,
+            18.52014007
+          ],
+          [
+            73.81824551,
+            18.52016728
+          ],
+          [
+            73.81846044,
+            18.52016048
+          ],
+          [
+            73.8186309,
+            18.52012647
+          ],
+          [
+            73.81874948,
+            18.52005165
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e25",
+        "name": "Sports Complex North Loop Road",
+        "source": "node_10",
+        "target": "node_11",
+        "capacity": 80,
+        "free_flow_time_sec": 20,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            229,
+            235
+          ],
+          [
+            251,
+            222
+          ],
+          [
+            276,
+            218
+          ],
+          [
+            305,
+            219
+          ],
+          [
+            328,
+            224
+          ],
+          [
+            344,
+            235
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e26",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81874948,
+            18.52005165
+          ],
+          [
+            73.8186309,
+            18.52012647
+          ],
+          [
+            73.81846044,
+            18.52016048
+          ],
+          [
+            73.81824551,
+            18.52016728
+          ],
+          [
+            73.81806023,
+            18.52014007
+          ],
+          [
+            73.81789718,
+            18.52005165
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e26",
+        "name": "Sports Complex North Loop Road (reverse)",
+        "source": "node_11",
+        "target": "node_10",
+        "capacity": 80,
+        "free_flow_time_sec": 20,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            344,
+            235
+          ],
+          [
+            328,
+            224
+          ],
+          [
+            305,
+            219
+          ],
+          [
+            276,
+            218
+          ],
+          [
+            251,
+            222
+          ],
+          [
+            229,
+            235
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e27",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81874948,
+            18.52005165
+          ],
+          [
+            73.81875689,
+            18.5198136
+          ],
+          [
+            73.8187643,
+            18.51956875
+          ],
+          [
+            73.81877171,
+            18.5193239
+          ],
+          [
+            73.81877912,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e27",
+        "name": "Sports Complex East Loop Road",
+        "source": "node_11",
+        "target": "node_12",
+        "capacity": 80,
+        "free_flow_time_sec": 22,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            344,
+            235
+          ],
+          [
+            345,
+            270
+          ],
+          [
+            346,
+            306
+          ],
+          [
+            347,
+            342
+          ],
+          [
+            348,
+            378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e28",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81877912,
+            18.51907904
+          ],
+          [
+            73.81877171,
+            18.5193239
+          ],
+          [
+            73.8187643,
+            18.51956875
+          ],
+          [
+            73.81875689,
+            18.5198136
+          ],
+          [
+            73.81874948,
+            18.52005165
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e28",
+        "name": "Sports Complex East Loop Road (reverse)",
+        "source": "node_12",
+        "target": "node_11",
+        "capacity": 80,
+        "free_flow_time_sec": 22,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            348,
+            378
+          ],
+          [
+            347,
+            342
+          ],
+          [
+            346,
+            306
+          ],
+          [
+            345,
+            270
+          ],
+          [
+            344,
+            235
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e29",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.81877912,
+            18.51907904
+          ],
+          [
+            73.81879395,
+            18.51904504
+          ],
+          [
+            73.818831,
+            18.51899743
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e29",
+        "name": "Sports Complex to Cast Gate Link",
+        "source": "node_12",
+        "target": "node_7",
+        "capacity": 70,
+        "free_flow_time_sec": 16,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            348,
+            378
+          ],
+          [
+            350,
+            383
+          ],
+          [
+            355,
+            390
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "edge_e30",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.818831,
+            18.51899743
+          ],
+          [
+            73.81879395,
+            18.51904504
+          ],
+          [
+            73.81877912,
+            18.51907904
+          ]
+        ]
+      },
+      "properties": {
+        "id": "e30",
+        "name": "Sports Complex to Cast Gate Link (reverse)",
+        "source": "node_7",
+        "target": "node_12",
+        "capacity": 70,
+        "free_flow_time_sec": 16,
+        "lanes": 1,
+        "layout_coordinates": [
+          [
+            355,
+            390
+          ],
+          [
+            350,
+            383
+          ],
+          [
+            348,
+            378
+          ]
+        ]
+      }
+    }
   ]
 }

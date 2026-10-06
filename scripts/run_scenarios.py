@@ -38,19 +38,19 @@ SIGNAL_PHASE_EDGES = {
 SCENARIOS: dict[str, dict[str, Any]] = {
     "morning": {
         "title": "Scenario 1 - Standard Morning Rush",
-        "description": "Gate 1 supplies 120 veh/hr; Paud Road and West Parking are balancing exits.",
+        "description": "Gate 1 supplies 120 veh/hr; Cast Gate and Gate 3 share the balancing exit demand.",
         "boundary_flows": {"node_1": 120.0, "node_7": -50.0, "node_8": -70.0},
         "closed_edges": (),
     },
     "evening": {
         "title": "Scenario 2 - Evening Mass Exit",
-        "description": "Paud Road node_7 models the unrepresented Gate 3 exit at 140 veh/hr; Gate 1 supplies the balancing inflow.",
-        "boundary_flows": {"node_1": 140.0, "node_7": -140.0},
+        "description": "Gate 1 supplies 140 veh/hr and Gate 3 records the matching campus exit.",
+        "boundary_flows": {"node_1": 140.0, "node_8": -140.0},
         "closed_edges": (),
     },
     "closure": {
         "title": "Scenario 3 - Gate 1 Main Road Closure",
-        "description": "Edge e1 is closed; Gate 1 demand is routed through the schematic Gate 1 North Bypass (e19).",
+        "description": "Edge e1 is closed; Gate 1 demand is routed through the poster-traced alternative campus path.",
         "boundary_flows": {"node_1": 90.0, "node_7": -20.0, "node_8": -70.0},
         "closed_edges": ("e1",),
     },

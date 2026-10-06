@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.schemas import (
     BoundaryFlowRequest,
+    DeviceAggregationResponse,
     FlowSolverResponse,
     GPSFixRequest,
     MapMatchResponse,
@@ -54,6 +56,7 @@ async def solve_flow(body: BoundaryFlowRequest, request: Request) -> FlowSolverR
                 app_state.traffic_solver.update_boundary_flows, body.boundary_flows
             )
             app_state.latest_solution = result
+            app_state.manual_override_until = time.monotonic() + 300.0
             metrics = await asyncio.to_thread(
                 app_state.bpr_calculator.calculate_from_solver,
                 app_state.traffic_solver,
@@ -121,11 +124,48 @@ async def map_match(body: GPSFixRequest, request: Request) -> MapMatchResponse:
             body.speed,
             previous_edge,
         )
-        if result.is_on_network:
-            app_state.device_previous_edges[body.device_id] = result.matched_edge_id
+        aggregate = app_state.device_tracker.record_fix(
+            device_id=body.device_id,
+            latitude=result.snapped_latitude if result.is_on_network else body.latitude,
+            longitude=result.snapped_longitude if result.is_on_network else body.longitude,
+            heading=body.heading,
+            speed_mps=body.speed,
+            matched_edge_id=result.matched_edge_id if result.is_on_network else None,
+            confidence=result.confidence_score,
+        )
+        active_device = next(
+            (item for item in aggregate["active_devices"] if item["device_id"] == body.device_id),
+            None,
+        )
+        effective_edge = active_device["edge_id"] if active_device else None
+        if effective_edge is not None:
+            app_state.device_previous_edges[body.device_id] = effective_edge
         else:
             app_state.device_previous_edges.pop(body.device_id, None)
-    return MapMatchResponse(device_id=body.device_id, **result.__dict__)
+    response_data = dict(result.__dict__)
+    if effective_edge and effective_edge != result.matched_edge_id:
+        edge = app_state.traffic_solver.edges[app_state.traffic_solver.edge_index[effective_edge]]
+        response_data["matched_edge_id"] = effective_edge
+        response_data["matched_edge_name"] = edge["name"]
+    edge_density = aggregate["edge_density"].get(effective_edge, {}) if effective_edge else {}
+    return MapMatchResponse(
+        device_id=body.device_id,
+        **response_data,
+        active_device_count=aggregate["active_device_count"],
+        matched_edge_device_count=int(edge_density.get("active_device_count", 0)),
+        crowd_density_people_per_100m=float(edge_density.get("people_per_100m", 0.0)),
+    )
+
+
+@router.get(
+    "/devices",
+    response_model=DeviceAggregationResponse,
+    summary="Get active mapped devices and rolling road density",
+)
+async def get_devices(request: Request) -> dict[str, Any]:
+    """Return active devices, per-edge counts, and rolling gate crossings."""
+    _require_initialized(request)
+    return request.app.state.device_tracker.snapshot()
 
 
 @router.get(
@@ -139,6 +179,8 @@ async def get_network(request: Request) -> dict[str, Any]:
     app_state = request.app.state
     payload = json.loads(json.dumps(app_state.network_payload))
     solution = app_state.latest_solution
+    live_metrics = getattr(app_state, "latest_live_edge_metrics", {})
+    device_snapshot = app_state.device_tracker.snapshot()
     if solution is None:
         flow_map: dict[str, float] = {}
         saturation_map: dict[str, float] = {}
@@ -156,16 +198,25 @@ async def get_network(request: Request) -> dict[str, Any]:
         if solution is not None
         else {}
     )
+    if live_metrics:
+        warnings = app_state.signal_optimizer.capacity_warnings(
+            {edge_id: metric.saturation_ratio for edge_id, metric in live_metrics.items()}
+        )
     for feature in payload.get("features", []):
         properties = feature.setdefault("properties", {})
         edge_id = properties.get("id")
-        metric = metric_map.get(edge_id)
-        properties["real_time_flow"] = flow_map.get(edge_id)
-        properties["saturation_ratio"] = saturation_map.get(edge_id)
+        metric = live_metrics.get(edge_id) or metric_map.get(edge_id)
+        density = device_snapshot["edge_density"].get(edge_id, {})
+        properties["real_time_flow"] = metric.flow if edge_id in live_metrics else flow_map.get(edge_id)
+        properties["saturation_ratio"] = (
+            metric.saturation_ratio if edge_id in live_metrics else saturation_map.get(edge_id)
+        )
         properties["effective_speed_kmh"] = (
             metric.effective_speed_kmh if metric is not None else None
         )
         properties["travel_time_sec"] = metric.travel_time_sec if metric is not None else None
         properties["delay_sec"] = metric.congestion_delay_sec if metric is not None else None
         properties["capacity_warning"] = edge_id in warnings
+        properties["active_device_count"] = int(density.get("active_device_count", 0))
+        properties["crowd_density_people_per_100m"] = float(density.get("people_per_100m", 0.0))
     return payload

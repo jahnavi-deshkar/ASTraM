@@ -47,6 +47,8 @@
           <div class="online-pill" id="connection-status" data-state="connecting" role="status" aria-live="polite">
             <span class="status-dot"></span><span id="connection-label">CONNECTING</span>
           </div>
+          <div class="device-count-pill" aria-live="polite"><span class="device-count-dot"></span><strong id="active-device-count">0</strong><span>LIVE DEVICES</span></div>
+          <button id="share-location-button" class="share-location-button" type="button" aria-pressed="false"><span aria-hidden="true">⌖</span><span id="share-location-label">Share My Live Location</span></button>
           <div class="clock-block"><span class="eyebrow">LOCAL TIME</span><time id="system-clock">--:--:--</time></div>
           <div class="view-toggle" role="group" aria-label="Choose map view">
             <button class="view-button is-active" id="view-2d-button" type="button" aria-pressed="true">
@@ -92,7 +94,11 @@
                   <h2 id="map-heading">MIT-WPU live map</h2>
                 </div>
                 <div class="map-tools">
-                  <button id="map-match-mode" class="subtle-button" type="button" aria-pressed="false">⌖ Click map to test GPS snap</button>
+                  <div class="map-action-group">
+                    <button id="share-live-location-map" class="subtle-button share-map-button" type="button" aria-pressed="false">⌖ Share My Live Location</button>
+                    <button id="map-match-mode" class="subtle-button" type="button" aria-pressed="false">⌖ Click map to test GPS snap</button>
+                  </div>
+                  <span class="device-count-small"><strong id="map-active-device-count">0</strong> live</span>
                   <span id="map-layer-count" class="small-count">Loading roads…</span>
                 </div>
               </div>
@@ -109,7 +115,7 @@
                   <span><i class="legend-dot warning"></i>Warning <b>75–89%</b></span>
                   <span><i class="legend-dot severe"></i>Severe <b>≥ 90%</b></span>
                 </div>
-                <span class="data-note">Road geometry is schematic</span>
+                <span class="data-note">Campus schematic · provisional GPS calibration</span>
               </div>
             </section>
 
@@ -139,17 +145,17 @@
               </div>
 
               <div class="flow-control" data-node="node_7">
-                <div class="control-label-row"><label for="paud-range">Paud Road net flow <span>node_7 · + in / − out</span></label><output id="paud-output">20</output></div>
-                <input id="paud-range" class="flow-range" type="range" min="-140" max="140" step="1" value="20" aria-label="Paud Road net boundary flow in vehicles per hour" />
-                <div class="input-unit"><input id="paud-number" type="number" min="-140" max="140" step="1" value="20" /><span>veh/hr</span></div>
+                <div class="control-label-row"><label for="cast-range">Cast Gate net flow <span>node_7 · + in / − out</span></label><output id="cast-output">20</output></div>
+                <input id="cast-range" class="flow-range" type="range" min="-140" max="140" step="1" value="20" aria-label="Cast Gate net boundary flow in vehicles per hour" />
+                <div class="input-unit"><input id="cast-number" type="number" min="-140" max="140" step="1" value="20" /><span>veh/hr</span></div>
               </div>
 
               <div class="flow-control exit-control" data-node="node_8">
-                <div class="control-label-row"><label for="exit-range">West Parking exit <span>node_8</span></label><output id="exit-output">60</output></div>
-                <input id="exit-range" class="flow-range" type="range" min="0" max="70" step="1" value="60" aria-label="West Parking exit volume per hour" />
-                <div class="input-unit"><input id="exit-number" type="number" min="0" max="70" step="1" value="60" /><span>veh/hr out</span></div>
+                <div class="control-label-row"><label for="exit-range">Gate 3 outflow <span>node_8</span></label><output id="exit-output">60</output></div>
+                <input id="exit-range" class="flow-range" type="range" min="0" max="120" step="1" value="60" aria-label="Gate 3 exit volume per hour" />
+                <div class="input-unit"><input id="exit-number" type="number" min="0" max="120" step="1" value="60" /><span>veh/hr out</span></div>
               </div>
-              <p id="scenario-validation" class="validation-message" aria-live="polite">Boundary flows balance. Exit capacity: 70 veh/hr.</p>
+              <p id="scenario-validation" class="validation-message" aria-live="polite">Boundary flows balance. Gate 3 exit capacity: 120 veh/hr.</p>
               <button id="solve-flow-button" class="primary-button" type="button"><span>⟳</span> Recalculate traffic flow</button>
               <p id="solve-error" class="inline-error is-hidden" role="alert"></p>
             </section>
@@ -163,9 +169,9 @@
                 <label class="field-label" for="gps-device">Device ID</label>
                 <input id="gps-device" type="text" value="dashboard-simulator" maxlength="128" required />
                 <div class="field-grid">
-                  <div><label class="field-label" for="gps-latitude">Latitude</label><input id="gps-latitude" type="number" min="-90" max="90" step="0.000001" value="18.517500" required /></div>
-                  <div><label class="field-label" for="gps-longitude">Longitude</label><input id="gps-longitude" type="number" min="-180" max="180" step="0.000001" value="73.817600" required /></div>
-                  <div><label class="field-label" for="gps-heading">Heading <small>degrees</small></label><input id="gps-heading" type="number" min="0" max="360" step="1" value="53" /></div>
+                  <div><label class="field-label" for="gps-latitude">Latitude</label><input id="gps-latitude" type="number" min="-90" max="90" step="0.000001" value="18.516900" required /></div>
+                  <div><label class="field-label" for="gps-longitude">Longitude</label><input id="gps-longitude" type="number" min="-180" max="180" step="0.000001" value="73.817290" required /></div>
+                  <div><label class="field-label" for="gps-heading">Heading <small>degrees</small></label><input id="gps-heading" type="number" min="0" max="360" step="1" value="0" /></div>
                   <div><label class="field-label" for="gps-speed">Speed <small>km/h</small></label><input id="gps-speed" type="number" min="0" max="200" step="1" value="12" /></div>
                 </div>
                 <button id="gps-submit" class="secondary-button" type="submit">Test snap to road</button>

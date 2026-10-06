@@ -411,7 +411,7 @@ if __name__ == "__main__":
     solver = TrafficMatrixSolver(network_path)
     # Public convention: positive means vehicles enter the campus, negative
     # means vehicles leave. Totals balance at 60 vehicles/hour, within the
-    # West Parking Access Road's 70 vehicles/hour capacity.
+    # Gate 1, Cast Gate, and Gate 3 form a balanced illustrative boundary.
     mock_boundary_flows = {"node_1": 40.0, "node_7": 20.0, "node_8": -60.0}
     solved = solver.solve(mock_boundary_flows)
     _print_solution(solver, solved)

@@ -79,6 +79,33 @@ class MapMatchResponse(BaseModel):
     confidence_score: float = Field(..., ge=0.0, le=1.0)
     is_on_network: bool
     status: str
+    active_device_count: int = Field(default=0, ge=0)
+    matched_edge_device_count: int = Field(default=0, ge=0)
+    crowd_density_people_per_100m: float = Field(default=0.0, ge=0.0)
+
+
+class ActiveDeviceState(BaseModel):
+    device_id: str
+    edge_id: str | None
+    latitude: float
+    longitude: float
+    heading: float | None = None
+    speed_mps: float | None = Field(default=None, ge=0.0)
+    confidence_score: float = Field(..., ge=0.0, le=1.0)
+    last_seen: str
+
+
+class DeviceAggregationResponse(BaseModel):
+    window_seconds: float = Field(..., gt=0.0)
+    active_device_count: int = Field(..., ge=0)
+    active_devices: list[ActiveDeviceState]
+    edge_device_counts: dict[str, int]
+    edge_density: dict[str, dict[str, float | int]]
+    boundary_event_counts: dict[str, int]
+    boundary_flows_vph: dict[str, float]
+    solver_boundary_flows_vph: dict[str, float]
+    boundary_flows_balanced: bool
+    boundary_flow_net_vph: float
 
 
 class EdgeTrafficState(BaseModel):
@@ -89,6 +116,8 @@ class EdgeTrafficState(BaseModel):
     delay_sec: float = Field(..., ge=0.0)
     effective_speed_kmh: float = Field(..., ge=0.0)
     capacity_warning: bool
+    active_device_count: int = Field(default=0, ge=0)
+    crowd_density_people_per_100m: float = Field(default=0.0, ge=0.0)
 
 
 class VehiclePosition(BaseModel):
@@ -105,6 +134,7 @@ class RealtimeTrafficState(BaseModel):
     simulation_tick: int
     active_signal_phases: dict[str, str]
     signal_timing: dict[str, Any] = Field(default_factory=dict)
+    device_aggregation: DeviceAggregationResponse
     edges: list[EdgeTrafficState]
     vehicle_positions: list[VehiclePosition]
 

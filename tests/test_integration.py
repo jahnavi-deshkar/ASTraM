@@ -19,6 +19,13 @@ NETWORK_PATH = ROOT / "data" / "mit_wpu_roads.geojson"
 BALANCED_FLOWS = {"node_1": 40.0, "node_7": 20.0, "node_8": -60.0}
 
 
+def gate1_fix() -> tuple[float, float]:
+    payload = json.loads(NETWORK_PATH.read_text(encoding="utf-8"))
+    edge = next(feature for feature in payload["features"] if feature["properties"]["id"] == "e1")
+    coordinates = edge["geometry"]["coordinates"]
+    return (sum(point[1] for point in coordinates) / len(coordinates), coordinates[0][0])
+
+
 def test_flow_solver() -> None:
     solver = TrafficMatrixSolver(NETWORK_PATH)
     first = solver.solve(BALANCED_FLOWS)
@@ -73,7 +80,8 @@ def test_traffic_physics() -> None:
 
 def test_map_matching(tmp_path: Path) -> None:
     matcher = GPSMapMatcher(NETWORK_PATH)
-    matched = matcher.snap_location(18.5175, 73.81761, heading=53.0, speed=4.0)
+    latitude, longitude = gate1_fix()
+    matched = matcher.snap_location(latitude, longitude, heading=0.0, speed=4.0)
     assert matched.is_on_network
     assert matched.matched_edge_id in {"e1", "e2"}
     assert matched.cross_track_distance_m is not None
@@ -81,7 +89,7 @@ def test_map_matching(tmp_path: Path) -> None:
     assert matched.heading_delta_deg is not None
     assert matched.heading_delta_deg <= 45.0
 
-    perpendicular = matcher.snap_location(18.5175, 73.8176, heading=143.0)
+    perpendicular = matcher.snap_location(latitude, longitude, heading=90.0)
     assert not perpendicular.is_on_network
     assert perpendicular.status == "Off-Road / Pedestrian Path"
 
@@ -145,9 +153,9 @@ def test_api_endpoints() -> None:
             "/api/v1/map-match",
             json={
                 "device_id": "integration-test-device",
-                "latitude": 18.5175,
-                "longitude": 73.81761,
-                "heading": 53.0,
+                "latitude": gate1_fix()[0],
+                "longitude": gate1_fix()[1],
+                "heading": 0.0,
                 "speed": 4.0,
             },
         )
