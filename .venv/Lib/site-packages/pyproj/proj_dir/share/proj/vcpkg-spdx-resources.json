@@ -1,0 +1,19 @@
+{
+  "packages": [
+{
+  "SPDXID" : "SPDXRef-resource-0",
+  "checksums" : 
+  [
+    {
+      "algorithm" : "SHA512",
+      "checksumValue" : "133d01a0667886540630274fc93142b282a034ede9caa53a78e34d3ed888c20d4413af7702e9d255366a0b00d3a6675797813d1b4a4f0abef0c6c97a505aa53a"
+    }
+  ],
+  "copyrightText" : "NOASSERTION",
+  "downloadLocation" : "git+https://github.com/OSGeo/PROJ@9.8.1",
+  "licenseConcluded" : "NOASSERTION",
+  "licenseDeclared" : "NOASSERTION",
+  "name" : "OSGeo/PROJ"
+}
+  ]
+}

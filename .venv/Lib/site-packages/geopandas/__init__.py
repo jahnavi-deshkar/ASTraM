@@ -1,0 +1,34 @@
+from geopandas._config import options
+
+from geopandas.geoseries import GeoSeries
+from geopandas.geodataframe import GeoDataFrame
+from geopandas.array import points_from_xy
+
+from geopandas.io.file import _read_file as read_file
+from geopandas.io.file import _list_layers as list_layers
+from geopandas.io.file import _read_file_info as read_file_info
+from geopandas.io.arrow import _read_parquet as read_parquet
+from geopandas.io.arrow import _read_feather as read_feather
+from geopandas.io.sql import _read_postgis as read_postgis
+from geopandas.tools import (
+    sjoin,
+    sjoin_nearest,
+    overlay,
+    clip,
+    geocode,
+    make_grid,
+    reverse_geocode,
+)
+from geopandas.tools._show_versions import show_versions
+
+
+import geopandas.datasets
+
+
+# make the interactive namespace easier to use
+# for `from geopandas import *` demos.
+import geopandas as gpd
+import pandas as pd
+import numpy as np
+
+from geopandas._version import __version__
