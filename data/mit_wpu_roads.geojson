@@ -41,6 +41,8 @@
     {"type":"Feature","id":"edge_15","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81975,18.51870]]},"properties":{"id":"e15","name":"Paud Road Link","source":"node_3","target":"node_7","capacity":140,"free_flow_time_sec":23,"lanes":2}},
     {"type":"Feature","id":"edge_16","geometry":{"type":"LineString","coordinates":[[73.81975,18.51870],[73.81890,18.51835]]},"properties":{"id":"e16","name":"Paud Road Link (campusbound)","source":"node_7","target":"node_3","capacity":140,"free_flow_time_sec":23,"lanes":2}},
     {"type":"Feature","id":"edge_17","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81635,18.51855]]},"properties":{"id":"e17","name":"West Parking Access Road","source":"node_5","target":"node_8","capacity":70,"free_flow_time_sec":21,"lanes":1}},
-    {"type":"Feature","id":"edge_18","geometry":{"type":"LineString","coordinates":[[73.81635,18.51855],[73.81715,18.51830]]},"properties":{"id":"e18","name":"West Parking Access Road (inbound)","source":"node_8","target":"node_5","capacity":70,"free_flow_time_sec":21,"lanes":1}}
+    {"type":"Feature","id":"edge_18","geometry":{"type":"LineString","coordinates":[[73.81635,18.51855],[73.81715,18.51830]]},"properties":{"id":"e18","name":"West Parking Access Road (inbound)","source":"node_8","target":"node_5","capacity":70,"free_flow_time_sec":21,"lanes":1}},
+    {"type":"Feature","id":"edge_19","geometry":{"type":"LineString","coordinates":[[73.81720,18.51720],[73.81715,18.51830]]},"properties":{"id":"e19","name":"Gate 1 North Bypass","source":"node_1","target":"node_5","capacity":100,"free_flow_time_sec":32,"lanes":1}},
+    {"type":"Feature","id":"edge_20","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81720,18.51720]]},"properties":{"id":"e20","name":"Gate 1 North Bypass (southbound)","source":"node_5","target":"node_1","capacity":100,"free_flow_time_sec":32,"lanes":1}}
   ]
 }

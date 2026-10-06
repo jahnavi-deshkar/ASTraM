@@ -336,7 +336,7 @@ class TrafficMatrixSolver:
         return FlowSolution(
             edge_flows={edge_id: float(x[i]) for i, edge_id in enumerate(self.edge_ids)},
             saturation_ratios={
-                edge_id: float(x[i] / self.capacities[i])
+                edge_id: float(x[i] / self.capacities[i]) if self.capacities[i] > 0 else 0.0
                 for i, edge_id in enumerate(self.edge_ids)
             },
             residual_error=residual_norm,
