@@ -12,8 +12,10 @@ from typing import Any
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-from app.api.endpoints import router as api_router
+from app.api.endpoints import SIGNAL_PHASE_EDGES, router as api_router
 from app.schemas import EdgeTrafficState, RealtimeTrafficState, VehiclePosition
 from app.services.flow_solver import TrafficMatrixSolver
 from app.services.map_matching import GPSMapMatcher
@@ -21,6 +23,8 @@ from app.services.traffic_physics import BPRCalculator, SignalOptimizer
 
 
 NETWORK_PATH = Path(__file__).resolve().parents[1] / "data" / "mit_wpu_roads.geojson"
+STATIC_PATH = Path(__file__).resolve().parents[1] / "static"
+TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "templates" / "index.html"
 BROADCAST_INTERVAL_SEC = 2.0
 
 
@@ -90,12 +94,19 @@ def _make_realtime_state(app: FastAPI, tick: int) -> RealtimeTrafficState:
 
     cycle = state.signal_optimizer.cycle_time_sec
     current_time = tick * BROADCAST_INTERVAL_SEC
-    phase_number = int(current_time // max(cycle / 4.0, 1.0)) % 4
     phase_names = ("north_approach", "east_approach", "south_approach", "west_approach")
-    active_phases = {
-        phase: ("green" if index == phase_number else "red")
-        for index, phase in enumerate(phase_names)
-    }
+    timing = state.latest_signal_timing
+    position_in_cycle = current_time % cycle if cycle > 0 else 0.0
+    active_phases = {phase: "red" for phase in phase_names}
+    green_cursor = 0.0
+    for phase in phase_names:
+        phase_green = timing.green_times_sec.get(phase, 0.0)
+        if green_cursor <= position_in_cycle < green_cursor + phase_green:
+            active_phases[phase] = "green"
+            break
+        green_cursor += phase_green
+    if position_in_cycle >= green_cursor:
+        active_phases = {phase: "amber" for phase in phase_names}
 
     vehicle_positions: list[VehiclePosition] = []
     for index, edge in enumerate(solver.edges[:4]):
@@ -130,6 +141,7 @@ def _make_realtime_state(app: FastAPI, tick: int) -> RealtimeTrafficState:
         timestamp=datetime.now(timezone.utc).isoformat(),
         simulation_tick=tick,
         active_signal_phases=active_phases,
+        signal_timing=timing.as_dict(),
         edges=edge_states,
         vehicle_positions=vehicle_positions,
     )
@@ -172,6 +184,9 @@ async def lifespan(app: FastAPI):
     app.state.latest_solution = await asyncio.to_thread(
         solver.solve, {"node_1": 40.0, "node_7": 20.0, "node_8": -60.0}
     )
+    app.state.latest_signal_timing = signal_optimizer.allocate_from_solver(
+        solver, SIGNAL_PHASE_EDGES, app.state.latest_solution
+    )
     app.state.broadcast_task = asyncio.create_task(_broadcast_loop(app))
     try:
         yield
@@ -197,6 +212,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(api_router)
+app.mount("/static", StaticFiles(directory=STATIC_PATH), name="static")
+
+
+@app.get("/", include_in_schema=False)
+async def dashboard() -> FileResponse:
+    """Serve the ASTraM single-page operations dashboard."""
+    return FileResponse(TEMPLATE_PATH, media_type="text/html")
 
 
 @app.get("/health", tags=["System"])

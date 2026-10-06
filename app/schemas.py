@@ -104,6 +104,7 @@ class RealtimeTrafficState(BaseModel):
     timestamp: str
     simulation_tick: int
     active_signal_phases: dict[str, str]
+    signal_timing: dict[str, Any] = Field(default_factory=dict)
     edges: list[EdgeTrafficState]
     vehicle_positions: list[VehiclePosition]
 

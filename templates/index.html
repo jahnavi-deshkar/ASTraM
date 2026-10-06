@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="description" content="ASTraM live campus traffic management dashboard for MIT-WPU." />
+    <title>ASTraM | MIT-WPU Traffic Operations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              midnight: '#07111f',
+              panel: '#0d1a2a',
+              line: '#1e3045',
+              accent: '#38bdf8'
+            },
+            fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] }
+          }
+        }
+      };
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body class="min-h-screen bg-midnight text-slate-100 antialiased">
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <p class="eyebrow">MIT WORLD PEACE UNIVERSITY · PUNE</p>
+            <h1>ASTraM <span>Traffic Operations</span></h1>
+          </div>
+        </div>
+        <div class="header-status">
+          <div class="online-pill" id="connection-status" data-state="connecting" role="status" aria-live="polite">
+            <span class="status-dot"></span><span id="connection-label">CONNECTING</span>
+          </div>
+          <div class="clock-block"><span class="eyebrow">LOCAL TIME</span><time id="system-clock">--:--:--</time></div>
+          <div class="view-toggle" role="group" aria-label="Choose map view">
+            <button class="view-button is-active" id="view-2d-button" type="button" aria-pressed="true">
+              <span aria-hidden="true">▦</span> 2D Map
+            </button>
+            <button class="view-button" id="view-3d-button" type="button" aria-pressed="false">
+              <span aria-hidden="true">◇</span> 3D Campus
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard-main">
+        <section class="overview-grid" aria-label="Live network summary">
+          <article class="metric-card">
+            <div class="metric-icon icon-blue">↗</div>
+            <div><p class="metric-label">AVG. LINK FLOW</p><p class="metric-value"><span id="total-flow">—</span><small>veh/hr</small></p></div>
+            <span class="metric-foot" id="flow-snapshot">Awaiting network</span>
+          </article>
+          <article class="metric-card">
+            <div class="metric-icon icon-green">⌁</div>
+            <div><p class="metric-label">AVG. SATURATION</p><p class="metric-value"><span id="average-saturation">—</span><small>%</small></p></div>
+            <span class="metric-foot">Across directed road links</span>
+          </article>
+          <article class="metric-card">
+            <div class="metric-icon icon-amber">!</div>
+            <div><p class="metric-label">CAPACITY WARNINGS</p><p class="metric-value"><span id="warning-count">0</span><small>links</small></p></div>
+            <span class="metric-foot" id="warning-summary">75% buffer threshold</span>
+          </article>
+          <article class="metric-card">
+            <div class="metric-icon icon-violet">◷</div>
+            <div><p class="metric-label">SIGNAL CYCLE</p><p class="metric-value"><span id="cycle-value">90</span><small>sec</small></p></div>
+            <span class="metric-foot" id="simulation-tick">Live simulation</span>
+          </article>
+        </section>
+
+        <div class="content-grid">
+          <section class="map-column">
+            <section class="panel map-panel" aria-labelledby="map-heading">
+              <div class="panel-heading map-heading">
+                <div>
+                  <p class="eyebrow">CAMPUS NETWORK</p>
+                  <h2 id="map-heading">MIT-WPU live map</h2>
+                </div>
+                <div class="map-tools">
+                  <button id="map-match-mode" class="subtle-button" type="button" aria-pressed="false">⌖ Click map to test GPS snap</button>
+                  <span id="map-layer-count" class="small-count">Loading roads…</span>
+                </div>
+              </div>
+              <div class="map-views">
+                <div id="campus-map" class="map-view is-visible" aria-label="Interactive 2D campus road map"></div>
+                <div id="campus-3d" class="map-view three-view" aria-label="Interactive 3D campus view"></div>
+                <div id="map-loading" class="map-overlay"><span class="loader-ring"></span><span>Loading campus network</span></div>
+                <div id="map-error" class="map-overlay error-overlay is-hidden" role="alert"></div>
+              </div>
+              <div class="map-footer">
+                <div class="legend" aria-label="Traffic saturation legend">
+                  <span><i class="legend-dot free"></i>Free flow <b>&lt; 50%</b></span>
+                  <span><i class="legend-dot moderate"></i>Moderate <b>50–74%</b></span>
+                  <span><i class="legend-dot warning"></i>Warning <b>75–89%</b></span>
+                  <span><i class="legend-dot severe"></i>Severe <b>≥ 90%</b></span>
+                </div>
+                <span class="data-note">Road geometry is schematic</span>
+              </div>
+            </section>
+
+            <section class="panel signal-panel" aria-labelledby="signal-heading">
+              <div class="panel-heading compact-heading">
+                <div><p class="eyebrow">INTERSECTION CONTROL</p><h2 id="signal-heading">Signal timing plan</h2></div>
+                <div class="cycle-badge"><span id="amber-value">8</span>s amber · <span id="cycle-total">90</span>s cycle</div>
+              </div>
+              <div id="signal-phases" class="signal-phase-grid" aria-live="polite">
+                <div class="signal-empty">Recalculate traffic flow to allocate green phases.</div>
+              </div>
+            </section>
+          </section>
+
+          <aside class="side-column" aria-label="Traffic controls and diagnostics">
+            <section class="panel scenario-panel" aria-labelledby="scenario-heading">
+              <div class="panel-heading compact-heading">
+                <div><p class="eyebrow">WHAT-IF SCENARIO</p><h2 id="scenario-heading">Boundary traffic</h2></div>
+                <span class="panel-icon">⇄</span>
+              </div>
+              <p class="panel-description">Set measured gate flows. The exit count balances the network; keep it within the modeled link capacity.</p>
+
+              <div class="flow-control" data-node="node_1">
+                <div class="control-label-row"><label for="gate1-range">Gate 1 inflow <span>node_1</span></label><output id="gate1-output">40</output></div>
+                <input id="gate1-range" class="flow-range" type="range" min="0" max="150" step="1" value="40" aria-label="Gate 1 inflow vehicles per hour" />
+                <div class="input-unit"><input id="gate1-number" type="number" min="0" max="150" step="1" value="40" /><span>veh/hr</span></div>
+              </div>
+
+              <div class="flow-control" data-node="node_7">
+                <div class="control-label-row"><label for="paud-range">Paud Road net flow <span>node_7 · + in / − out</span></label><output id="paud-output">20</output></div>
+                <input id="paud-range" class="flow-range" type="range" min="-140" max="140" step="1" value="20" aria-label="Paud Road net boundary flow in vehicles per hour" />
+                <div class="input-unit"><input id="paud-number" type="number" min="-140" max="140" step="1" value="20" /><span>veh/hr</span></div>
+              </div>
+
+              <div class="flow-control exit-control" data-node="node_8">
+                <div class="control-label-row"><label for="exit-range">West Parking exit <span>node_8</span></label><output id="exit-output">60</output></div>
+                <input id="exit-range" class="flow-range" type="range" min="0" max="70" step="1" value="60" aria-label="West Parking exit volume per hour" />
+                <div class="input-unit"><input id="exit-number" type="number" min="0" max="70" step="1" value="60" /><span>veh/hr out</span></div>
+              </div>
+              <p id="scenario-validation" class="validation-message" aria-live="polite">Boundary flows balance. Exit capacity: 70 veh/hr.</p>
+              <button id="solve-flow-button" class="primary-button" type="button"><span>⟳</span> Recalculate traffic flow</button>
+              <p id="solve-error" class="inline-error is-hidden" role="alert"></p>
+            </section>
+
+            <section class="panel gps-panel" aria-labelledby="gps-heading">
+              <div class="panel-heading compact-heading">
+                <div><p class="eyebrow">LOCATION ENGINE</p><h2 id="gps-heading">GPS map matching</h2></div>
+                <span class="panel-icon">⌖</span>
+              </div>
+              <form id="gps-form" class="gps-form">
+                <label class="field-label" for="gps-device">Device ID</label>
+                <input id="gps-device" type="text" value="dashboard-simulator" maxlength="128" required />
+                <div class="field-grid">
+                  <div><label class="field-label" for="gps-latitude">Latitude</label><input id="gps-latitude" type="number" min="-90" max="90" step="0.000001" value="18.517500" required /></div>
+                  <div><label class="field-label" for="gps-longitude">Longitude</label><input id="gps-longitude" type="number" min="-180" max="180" step="0.000001" value="73.817600" required /></div>
+                  <div><label class="field-label" for="gps-heading">Heading <small>degrees</small></label><input id="gps-heading" type="number" min="0" max="360" step="1" value="53" /></div>
+                  <div><label class="field-label" for="gps-speed">Speed <small>km/h</small></label><input id="gps-speed" type="number" min="0" max="200" step="1" value="12" /></div>
+                </div>
+                <button id="gps-submit" class="secondary-button" type="submit">Test snap to road</button>
+              </form>
+              <div id="gps-result" class="gps-result is-hidden" aria-live="polite">
+                <div class="result-topline"><span class="eyebrow">MATCH RESULT</span><span id="gps-network-badge" class="network-badge">—</span></div>
+                <h3 id="gps-road-name">—</h3>
+                <div class="result-metrics">
+                  <div><span>Cross-track</span><b id="gps-distance">—</b></div>
+                  <div><span>Heading Δ</span><b id="gps-heading-delta">—</b></div>
+                  <div><span>Confidence</span><b id="gps-confidence">—</b></div>
+                </div>
+              </div>
+              <p id="gps-error" class="inline-error is-hidden" role="alert"></p>
+            </section>
+
+            <section class="panel alerts-panel" aria-labelledby="alerts-heading">
+              <div class="panel-heading compact-heading">
+                <div><p class="eyebrow">EARLY WARNING</p><h2 id="alerts-heading">Bottleneck alerts</h2></div>
+                <span id="alert-count-badge" class="count-badge">0</span>
+              </div>
+              <div id="alert-feed" class="alert-feed" aria-live="polite">
+                <div class="alert-empty"><span>✓</span><p>No links above the 75% capacity buffer.</p></div>
+              </div>
+            </section>
+          </aside>
+        </div>
+        <footer class="page-footer"><span>ASTraM · MIT-WPU campus traffic modeling</span><span id="last-update">Waiting for live state</span><span>Illustrative network data</span></footer>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="/static/js/app.js"></script>
+  </body>
+</html>

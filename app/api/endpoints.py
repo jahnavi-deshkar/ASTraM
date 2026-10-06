@@ -64,6 +64,7 @@ async def solve_flow(body: BoundaryFlowRequest, request: Request) -> FlowSolverR
                 SIGNAL_PHASE_EDGES,
                 result,
             )
+            app_state.latest_signal_timing = timing
             warnings = app_state.signal_optimizer.capacity_warnings(result)
     except (BoundaryFlowError, ValueError, KeyError) as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
