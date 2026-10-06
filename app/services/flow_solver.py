@@ -410,7 +410,8 @@ if __name__ == "__main__":
     network_path = _default_network_path()
     solver = TrafficMatrixSolver(network_path)
     # Public convention: positive means vehicles enter the campus, negative
-    # means vehicles leave. Totals balance at 120 vehicles/hour.
-    mock_boundary_flows = {"node_1": 80.0, "node_7": 40.0, "node_8": -120.0}
+    # means vehicles leave. Totals balance at 60 vehicles/hour, within the
+    # West Parking Access Road's 70 vehicles/hour capacity.
+    mock_boundary_flows = {"node_1": 40.0, "node_7": 20.0, "node_8": -60.0}
     solved = solver.solve(mock_boundary_flows)
     _print_solution(solver, solved)
