@@ -1,0 +1,46 @@
+{
+  "type": "FeatureCollection",
+  "name": "mit_wpu_roads",
+  "metadata": {
+    "title": "MIT-WPU campus road network (schematic starter dataset)",
+    "description": "Illustrative directed road network centered near MIT World Peace University, Pune. Node positions and segment geometry are approximate and must be surveyed or checked against authoritative campus mapping before operational use.",
+    "coordinate_reference_system": "OGC:CRS84",
+    "coordinate_order": "longitude, latitude",
+    "units": {
+      "capacity": "vehicles per hour (illustrative)",
+      "free_flow_time_sec": "seconds"
+    },
+    "network_model": "Directed graph; each LineString is one directed edge. Reverse movements are represented as separate features.",
+    "flow_boundary_convention": "entry and exit nodes are boundary nodes; internal nodes have no boundary marker. Supply measured net boundary flows before solving conservation equations."
+  },
+  "nodes": [
+    {"id":"node_1","name":"Gate 1 Main Entrance","longitude":73.81720,"latitude":18.51720,"boundary_type":"entry","boundary_flow_marker":"entry"},
+    {"id":"node_2","name":"Central Access Junction","longitude":73.81800,"latitude":18.51780,"boundary_type":"internal","boundary_flow_marker":null},
+    {"id":"node_3","name":"Academic Block Junction","longitude":73.81890,"latitude":18.51835,"boundary_type":"internal","boundary_flow_marker":null},
+    {"id":"node_4","name":"Central Campus Junction","longitude":73.81805,"latitude":18.51875,"boundary_type":"internal","boundary_flow_marker":null},
+    {"id":"node_5","name":"Library Junction","longitude":73.81715,"latitude":18.51830,"boundary_type":"internal","boundary_flow_marker":null},
+    {"id":"node_6","name":"North Campus Junction","longitude":73.81885,"latitude":18.51915,"boundary_type":"internal","boundary_flow_marker":null},
+    {"id":"node_7","name":"Paud Road Access","longitude":73.81975,"latitude":18.51870,"boundary_type":"entry_exit","boundary_flow_marker":"entry_exit"},
+    {"id":"node_8","name":"West Parking Access","longitude":73.81635,"latitude":18.51855,"boundary_type":"exit","boundary_flow_marker":"exit"}
+  ],
+  "features": [
+    {"type":"Feature","id":"edge_1","geometry":{"type":"LineString","coordinates":[[73.81720,18.51720],[73.81800,18.51780]]},"properties":{"id":"e1","name":"Gate 1 Main Entrance","source":"node_1","target":"node_2","capacity":150,"free_flow_time_sec":24,"lanes":2}},
+    {"type":"Feature","id":"edge_2","geometry":{"type":"LineString","coordinates":[[73.81800,18.51780],[73.81720,18.51720]]},"properties":{"id":"e2","name":"Gate 1 Main Entrance (outbound)","source":"node_2","target":"node_1","capacity":150,"free_flow_time_sec":24,"lanes":2}},
+    {"type":"Feature","id":"edge_3","geometry":{"type":"LineString","coordinates":[[73.81800,18.51780],[73.81890,18.51835]]},"properties":{"id":"e3","name":"Academic Block Link","source":"node_2","target":"node_3","capacity":120,"free_flow_time_sec":28,"lanes":2}},
+    {"type":"Feature","id":"edge_4","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81800,18.51780]]},"properties":{"id":"e4","name":"Academic Block Link (southbound)","source":"node_3","target":"node_2","capacity":120,"free_flow_time_sec":28,"lanes":2}},
+    {"type":"Feature","id":"edge_5","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81805,18.51875]]},"properties":{"id":"e5","name":"Central Spine East Link","source":"node_3","target":"node_4","capacity":100,"free_flow_time_sec":22,"lanes":1}},
+    {"type":"Feature","id":"edge_6","geometry":{"type":"LineString","coordinates":[[73.81805,18.51875],[73.81890,18.51835]]},"properties":{"id":"e6","name":"Central Spine East Link (eastbound)","source":"node_4","target":"node_3","capacity":100,"free_flow_time_sec":22,"lanes":1}},
+    {"type":"Feature","id":"edge_7","geometry":{"type":"LineString","coordinates":[[73.81805,18.51875],[73.81715,18.51830]]},"properties":{"id":"e7","name":"Library Connector","source":"node_4","target":"node_5","capacity":100,"free_flow_time_sec":25,"lanes":1}},
+    {"type":"Feature","id":"edge_8","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81805,18.51875]]},"properties":{"id":"e8","name":"Library Connector (eastbound)","source":"node_5","target":"node_4","capacity":100,"free_flow_time_sec":25,"lanes":1}},
+    {"type":"Feature","id":"edge_9","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81800,18.51780]]},"properties":{"id":"e9","name":"South Campus Link","source":"node_5","target":"node_2","capacity":90,"free_flow_time_sec":30,"lanes":1}},
+    {"type":"Feature","id":"edge_10","geometry":{"type":"LineString","coordinates":[[73.81800,18.51780],[73.81715,18.51830]]},"properties":{"id":"e10","name":"South Campus Link (northbound)","source":"node_2","target":"node_5","capacity":90,"free_flow_time_sec":30,"lanes":1}},
+    {"type":"Feature","id":"edge_11","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81885,18.51915]]},"properties":{"id":"e11","name":"North Academic Link","source":"node_3","target":"node_6","capacity":110,"free_flow_time_sec":26,"lanes":1}},
+    {"type":"Feature","id":"edge_12","geometry":{"type":"LineString","coordinates":[[73.81885,18.51915],[73.81890,18.51835]]},"properties":{"id":"e12","name":"North Academic Link (southbound)","source":"node_6","target":"node_3","capacity":110,"free_flow_time_sec":26,"lanes":1}},
+    {"type":"Feature","id":"edge_13","geometry":{"type":"LineString","coordinates":[[73.81885,18.51915],[73.81805,18.51875]]},"properties":{"id":"e13","name":"North Campus Cross Link","source":"node_6","target":"node_4","capacity":80,"free_flow_time_sec":27,"lanes":1}},
+    {"type":"Feature","id":"edge_14","geometry":{"type":"LineString","coordinates":[[73.81805,18.51875],[73.81885,18.51915]]},"properties":{"id":"e14","name":"North Campus Cross Link (northbound)","source":"node_4","target":"node_6","capacity":80,"free_flow_time_sec":27,"lanes":1}},
+    {"type":"Feature","id":"edge_15","geometry":{"type":"LineString","coordinates":[[73.81890,18.51835],[73.81975,18.51870]]},"properties":{"id":"e15","name":"Paud Road Link","source":"node_3","target":"node_7","capacity":140,"free_flow_time_sec":23,"lanes":2}},
+    {"type":"Feature","id":"edge_16","geometry":{"type":"LineString","coordinates":[[73.81975,18.51870],[73.81890,18.51835]]},"properties":{"id":"e16","name":"Paud Road Link (campusbound)","source":"node_7","target":"node_3","capacity":140,"free_flow_time_sec":23,"lanes":2}},
+    {"type":"Feature","id":"edge_17","geometry":{"type":"LineString","coordinates":[[73.81715,18.51830],[73.81635,18.51855]]},"properties":{"id":"e17","name":"West Parking Access Road","source":"node_5","target":"node_8","capacity":70,"free_flow_time_sec":21,"lanes":1}},
+    {"type":"Feature","id":"edge_18","geometry":{"type":"LineString","coordinates":[[73.81635,18.51855],[73.81715,18.51830]]},"properties":{"id":"e18","name":"West Parking Access Road (inbound)","source":"node_8","target":"node_5","capacity":70,"free_flow_time_sec":21,"lanes":1}}
+  ]
+}
