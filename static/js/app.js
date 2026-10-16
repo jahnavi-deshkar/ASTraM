@@ -3,7 +3,7 @@ import { ASTraMCampusViewer } from './three_campus_loader.js';
 const API_BASE = window.ASTRAM_API_BASE || window.location.origin;
 const IMAGE_WIDTH = 479;
 const IMAGE_HEIGHT = 816;
-const ROAD_COLORS = Object.freeze({ free: '#22c55e', moderate: '#eab308', warning: '#f97316', severe: '#ef4444' });
+const ROAD_COLORS = Object.freeze({ free: '#8b98a7', moderate: '#d4a75f', warning: '#ef906d', severe: '#d95760' });
 const PHASE_NAMES = Object.freeze({ north_approach: 'North approach', east_approach: 'East approach', south_approach: 'South approach', west_approach: 'West approach' });
 const state = {
   map: null, roadLayer: null, network: null, calibration: null, edgeMetrics: new Map(),
@@ -53,6 +53,7 @@ function initMap() {
   state.map = L.map('campus-map', { crs: L.CRS.Simple, zoomControl: true, minZoom: -1, maxZoom: 3, preferCanvas: true, attributionControl: false, maxBoundsViscosity: 0.8 });
   state.map.setView([IMAGE_HEIGHT / 2, IMAGE_WIDTH / 2], 0);
   L.imageOverlay('/static/assets/mit_wpu_campus_layout.png', [[0, 0], [IMAGE_HEIGHT, IMAGE_WIDTH]], { interactive: false, opacity: 1 }).addTo(state.map);
+  L.control.scale({ position: 'bottomleft', metric: true, imperial: false, maxWidth: 120, updateWhenIdle: true }).addTo(state.map);
   state.roadLayer = L.layerGroup().addTo(state.map);
   state.map.setMaxBounds([[-15, -12], [IMAGE_HEIGHT + 15, IMAGE_WIDTH + 12]]);
   state.map.on('click', (event) => {
@@ -65,13 +66,23 @@ function initMap() {
 function roadStyle(feature) {
   const props = feature.properties || {};
   const metric = getEdgeMetric(props.id);
-  return { color: saturationColor(metric.saturation_ratio ?? props.saturation_ratio ?? 0), weight: 5, opacity: 0.95, lineCap: 'round', lineJoin: 'round' };
+  const roadName = String(props.name || '').toLowerCase();
+  const isMainSpine = /spine|trunk|main gate|central avenue|sports complex/.test(roadName);
+  const hasSaturation = Number.isFinite(Number(metric.saturation_ratio ?? props.saturation_ratio));
+  return {
+    color: hasSaturation ? saturationColor(metric.saturation_ratio ?? props.saturation_ratio) : (isMainSpine ? '#ff6b6b' : '#cbd5e1'),
+    weight: isMainSpine ? 3.4 : 2.4,
+    opacity: isMainSpine ? 0.92 : 0.86,
+    lineCap: 'round',
+    lineJoin: 'round',
+  };
 }
 function bindRoadPopup(feature, layer) {
   const props = feature.properties || {};
   layer.on('click', () => {
     const metric = getEdgeMetric(props.id);
     const number = (value, digits = 1) => Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : '—';
+    layer.bindTooltip(`${escapeHtml(props.name || 'Campus road segment')} · ${escapeHtml(props.id || '')}`, { direction: 'top', sticky: true, opacity: 1, className: 'campus-road-tooltip' });
     layer.bindPopup(`<div class="edge-popup"><strong>${escapeHtml(props.name || 'Campus road segment')} <span class="edge-id">${escapeHtml(props.id || '')}</span></strong><div class="edge-popup-grid"><span>Flow</span><b>${number(metric.flow ?? props.real_time_flow)} veh/hr</b><span>Capacity</span><b>${number(props.capacity, 0)} veh/hr</b><span>Saturation</span><b>${number((metric.saturation_ratio ?? props.saturation_ratio) * 100)}%</b><span>Active devices</span><b>${number(metric.active_device_count ?? props.active_device_count, 0)}</b><span>Density</span><b>${number(metric.crowd_density_people_per_100m ?? props.crowd_density_people_per_100m)} / 100m</b><span>BPR delay</span><b>${number(metric.delay_sec ?? props.delay_sec)} sec</b><span>Effective speed</span><b>${number(metric.effective_speed_kmh ?? props.effective_speed_kmh)} km/h</b></div></div>`, { maxWidth: 290 }).openPopup();
   });
 }
@@ -163,6 +174,7 @@ function updateSignalLights() {
 
 function setView(view) {
   state.currentView = view; const is3d = view === '3d'; $('campus-map').classList.toggle('is-visible', !is3d); $('campus-3d').classList.toggle('is-visible', is3d);
+  document.querySelector('.map-title-block')?.classList.toggle('is-hidden', is3d);
   $('view-2d-button').classList.toggle('is-active', !is3d); $('view-3d-button').classList.toggle('is-active', is3d); $('view-2d-button').setAttribute('aria-pressed', String(!is3d)); $('view-3d-button').setAttribute('aria-pressed', String(is3d)); $('map-heading').textContent = is3d ? 'MIT-WPU 3D campus' : 'MIT-WPU live map';
   if (is3d) { ensure3DViewer(); requestAnimationFrame(() => state.viewer?.resize()); } else requestAnimationFrame(() => state.map?.invalidateSize(false));
 }
@@ -194,7 +206,7 @@ function renderGPSResult(result, latitude = Number($('gps-latitude').value), lon
   $('gps-distance').textContent = result.cross_track_distance_m == null ? '—' : `${Number(result.cross_track_distance_m).toFixed(2)} m`; $('gps-heading-delta').textContent = result.heading_delta_deg == null ? '—' : `${Number(result.heading_delta_deg).toFixed(1)}°`; $('gps-confidence').textContent = `${(Number(result.confidence_score) * 100).toFixed(0)}%`;
   const point = result.is_on_network ? [result.snapped_latitude, result.snapped_longitude] : [latitude, longitude];
   if (state.mapMarker) state.map.removeLayer(state.mapMarker);
-  state.mapMarker = L.circleMarker(geoToMap(point[0], point[1]), { radius: 6, color: result.is_on_network ? '#0ea5e9' : '#f97316', weight: 2, fillColor: result.is_on_network ? '#38bdf8' : '#fb923c', fillOpacity: 0.95 }).addTo(state.map).bindTooltip(result.is_on_network ? 'Matched road location' : 'Off-road GPS fix');
+  state.mapMarker = L.circleMarker(geoToMap(point[0], point[1]), { radius: 6, color: result.is_on_network ? '#fffefa' : '#fffefa', weight: 2, fillColor: result.is_on_network ? '#ff6b6b' : '#d77854', fillOpacity: 0.98 }).addTo(state.map).bindTooltip(result.is_on_network ? 'Matched road location' : 'Off-road GPS fix', { className: 'campus-road-tooltip' });
 }
 
 function deviceId() {
@@ -266,7 +278,7 @@ function updateVehicleMarkers(vehicles) {
   for (const item of vehicles) {
     if (typeof item.vehicle_id !== 'string' || !Number.isFinite(Number(item.latitude)) || !Number.isFinite(Number(item.longitude))) continue;
     ids.add(item.vehicle_id); const point = geoToMap(Number(item.latitude), Number(item.longitude)); let marker = state.vehicleMarkers.get(item.vehicle_id);
-    if (!marker) { marker = L.circleMarker(point, { radius: 4, color: '#e0f2fe', weight: 1.2, fillColor: '#2563eb', fillOpacity: 0.95 }).addTo(state.map); state.vehicleMarkers.set(item.vehicle_id, marker); }
+    if (!marker) { marker = L.circleMarker(point, { radius: 4, color: '#fffefa', weight: 1.3, fillColor: '#ff6b6b', fillOpacity: 0.95 }).addTo(state.map); state.vehicleMarkers.set(item.vehicle_id, marker); }
     else marker.setLatLng(point);
     marker.setTooltipContent(`Live device · ${escapeHtml(item.edge_id || '')}`);
   }

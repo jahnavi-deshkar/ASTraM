@@ -3,27 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#FDFBF7" />
     <meta name="description" content="ASTraM live campus traffic management dashboard for MIT-WPU." />
     <title>ASTraM | MIT-WPU Traffic Operations</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="/static/css/styles.css" />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              midnight: '#07111f',
-              panel: '#0d1a2a',
-              line: '#1e3045',
-              accent: '#38bdf8'
-            },
-            fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] }
-          }
-        }
-      };
-    </script>
     <script type="importmap">
       {
         "imports": {
@@ -33,7 +20,7 @@
       }
     </script>
   </head>
-  <body class="min-h-screen bg-midnight text-slate-100 antialiased">
+  <body class="antialiased">
     <div class="app-shell">
       <header class="topbar">
         <div class="brand-lockup">
@@ -107,6 +94,11 @@
                 <div id="campus-3d" class="map-view three-view" aria-label="Interactive 3D campus view"></div>
                 <div id="map-loading" class="map-overlay"><span class="loader-ring"></span><span>Loading campus network</span></div>
                 <div id="map-error" class="map-overlay error-overlay is-hidden" role="alert"></div>
+                <div class="map-title-block" aria-label="Map title">
+                  <p class="map-title-kicker">ASTraM · CAMPUS SERIES</p>
+                  <h2>MIT WORLD PEACE UNIVERSITY</h2>
+                  <p>Campus Traffic Operations &amp; Flow Geometry <span aria-hidden="true">•</span> Kothrud, Pune</p>
+                </div>
               </div>
               <div class="map-footer">
                 <div class="legend" aria-label="Traffic saturation legend">
