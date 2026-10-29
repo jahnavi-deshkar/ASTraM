@@ -1,6 +1,6 @@
 # ASTraM — Automated Smart Traffic Management
 
-ASTraM is a traffic modeling and visualization system for the MIT World Peace University (MIT-WPU) campus in Pune. It combines a directed road graph, capacity-bounded flow estimation, congestion delay modeling, signal timing allocation, GPS map matching, and a live 2D/3D dashboard.
+ASTraM is a traffic modeling and visualization system for the MIT World Peace University (MIT-WPU) campus in Kothrud, Pune. It combines a directed road graph, capacity-bounded flow estimation, congestion delay modeling, signal timing allocation, GPS map matching, and a live 2D/3D dashboard.
 
 > **Data status:** `data/mit_wpu_roads.geojson` is a schematic traced from the included campus poster. Its pixel-to-WGS84 calibration, capacities, and road geometry are approximate; the Gate 1 North Bypass is illustrative. The browser map uses the poster image directly and has no external basemap tiles. Live GPS accuracy requires surveyed control points and confirmation of traced roads against campus data. Blender building blocks are illustrative proxies.
 
